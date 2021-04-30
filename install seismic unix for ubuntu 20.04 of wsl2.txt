@@ -3,7 +3,7 @@ iceland_spar@hotmail.com
 
 # add path
 nano ~/.bashrc
-# add next 3 line
+# add next 3 line on the end
 # set the seismic_unix path
 export CWPROOT=/the/seismic_unix/root/document/
 export PATH=$PATH:/the/seismic_unix/root/document/bin
@@ -12,27 +12,48 @@ export PATH=$PATH:/the/seismic_unix/root/document/bin
 sudo apt-get update
 sudo apt-get install build-essential
 sudo apt-get install libmotif-dev
-sudo apt-get install libx11-dev 
-sudo apt-get install libxt-dev
+sudo apt-get install libx11-dev #maybe not need
+sudo apt-get install libxt-dev #maybe not need
 sudo apt-get install gfortran
 sudo apt-get install libglu1-mesa-dev 
 sudo apt-get install freeglut3-dev
-sudo apt-get install freeglut3 
+sudo apt-get install freeglut3 #maybe not need
 sudo apt-get install libxmu-dev 
-sudo apt-get install libxmu-headers 
+sudo apt-get install libxmu-headers #maybe need
 sudo apt-get install libxi-dev
-sudo apt-get install aptibmotif-dev
+sudo apt-get install aptibmotif-dev #maybe need
 sudo apt-get install aptitude
 sudo apt-get install csh
 sudo aptitude update
 
+# copy aim makefile
+cd /the/seismic_unix/root/document/src
+cp configs/Makefile.config_Linux_Ubuntu Makefile.config
+
 # install su
 cd /the/seismic_unix/root/document
 make install # main programm install
-make xinstall
-make xtinstall
+make xtinstall # install xtool
 make finstall
 make mglinstall
 make utils
-make xminstall
-make sfinstall
+make xminstall # ffttool
+make sfinstall # .segd support
+
+# if make sfinstall error just modify file code
+# Edit code and build SFIO version of SEGDREAD # remove lines 399 to 404 of src/Sfio/src/lib/sfio/Stdio_b/Sfstdio.c
+
+      printf("/* Linux7.2 requires __FILE in wchar.h - we fake it here */\n");
+      printf("#include        \"FEATURE/sfio\"\n");
+      printf("#if _typ___FILE\n");
+      printf("typedef FILE    *__FILE;\n");
+      printf("#endif\n\n");
+# remove lines 5 to 10 of src/Sfio/src/lib/sfio/Stdio_s/stdio_s.h
+#include        "FEATURE/sfio"
+
+#if _typ___FILE /* Redhat7.3 requires __FILE in wchar.h */
+typedef struct _sfio_s  *__FILE;
+#endif
+
+# test 
+suplane|suximage
